@@ -14,7 +14,9 @@ public final class UserDefaultsGateway {
     private let encoder = JSONEncoder()
     private let defaults = UserDefaults.standard
 
-    // MARK: - Internal methods
+    // MARK: - Init
+
+    public init() {}
 }
 
 extension UserDefaultsGateway: UserDefaultsGatewayType {
