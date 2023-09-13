@@ -9,6 +9,8 @@ final class UserDefaultsGatewayTests: XCTestCase {
         gateway = UserDefaultsGateway()
     }
 
+    // MARK: - Set
+
     func test_ifSetString_thenThereIsTheSameValue() {
         setAndCheck("Test_string")
     }
@@ -53,29 +55,31 @@ final class UserDefaultsGatewayTests: XCTestCase {
         }
     }
 
-    func test_ifSetStringAndRemove_thenThereIsTheSameValue() {
+    // MARK: - Set and Remove
+
+    func test_ifSetStringAndRemove_thenThereIsNothing() {
         setRemoveAndCheck("Test_string")
     }
 
-    func test_ifSetFloatAndRemove_thenThereIsTheSameValue() {
+    func test_ifSetFloatAndRemove_thenThereIsNothing() {
         for _ in 0..<10 {
             setRemoveAndCheck(Float.random(in: -1000...1000))
         }
     }
 
-    func test_ifSetBoolAndRemove_thenThereIsTheSameValue() {
+    func test_ifSetBoolAndRemove_thenThereIsNothing() {
         for _ in 0..<10 {
             setAndCheck(Bool.random())
         }
     }
 
-    func test_ifSetDoubleAndRemove_thenThereIsTheSameValue() {
+    func test_ifSetDoubleAndRemove_thenThereIsNothing() {
         for _ in 0..<10 {
             setRemoveAndCheck(Double.random(in: -1000...1000))
         }
     }
 
-    func test_ifSetIntAndRemove_thenThereIsTheSameValue() {
+    func test_ifSetIntAndRemove_thenThereIsNothing() {
         for _ in 0..<10 {
             setRemoveAndCheck(Int.random(in: -1000...1000))
         }
@@ -97,6 +101,40 @@ final class UserDefaultsGatewayTests: XCTestCase {
         }
     }
 
+    // MARK: - Empty value
+
+    func test_ifNoSet_thenThereIsNoString() {
+        checkNoObject(String.self)
+    }
+
+    func test_ifNoSet_thenThereIsNoFloat() {
+        checkNoObject(Float.self)
+    }
+
+    func test_ifNoSet_thenThereIsNoBool() {
+        checkNoObject(Bool.self)
+    }
+
+    func test_ifNoSet_thenThereIsNoDouble() {
+        checkNoObject(Double.self)
+    }
+
+    func test_ifNoSet_thenThereIsNoInt() {
+        checkNoObject(Int.self)
+    }
+
+    func test_ifNoSet_thenThereIsNoCustomObject() {
+        struct Object: Codable, Equatable {
+            let int: Int
+            let string: String
+            let float: Float
+        }
+
+        checkNoObject(Object.self)
+    }
+
+    // MARK: - Private methods
+
     private func setAndCheck<ObjectType: Codable & Equatable>(_ value: ObjectType) {
         let key = "some.test.key"
 
@@ -106,6 +144,18 @@ final class UserDefaultsGatewayTests: XCTestCase {
             let result: ObjectType? = try gateway.object(forKey: key)
 
             XCTAssertEqual(value, result)
+        } catch {
+            XCTFail("Test failed with caught error \(error)")
+        }
+    }
+
+    private func checkNoObject<ObjectType: Codable & Equatable>(_ type: ObjectType.Type) {
+        let key = "some.test.key"
+
+        do {
+            let result: ObjectType? = try gateway.object(forKey: key)
+
+            XCTAssertEqual(nil, result)
         } catch {
             XCTFail("Test failed with caught error \(error)")
         }
